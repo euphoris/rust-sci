@@ -1,0 +1,8 @@
+#[link(name = "sci", vers = "0.0.0", author = "Jae-Myoung Yu")];
+
+#[crate_type = "lib"];
+
+pub mod dist;
+
+#[cfg(test)]
+mod scitest;
