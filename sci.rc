@@ -2,6 +2,7 @@
 
 #[crate_type = "lib"];
 
+pub mod random;
 pub mod dist;
 
 #[cfg(test)]

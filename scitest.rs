@@ -3,6 +3,7 @@ extern mod std;
 #[cfg(test)]
 mod test {
     use dist::*;
+    use random::*;
 
     fn approx<T: NumCast, U: NumCast>(x: T, y: U) -> bool {
         let x1 = x.to_f64();
@@ -20,5 +21,14 @@ mod test {
 
         assert!(approx(f.pinv(f.p(x)), x));
         assert!(approx(f.qinv(f.q(x)), x));
+    }
+
+
+    #[test]
+    fn test_random(){
+        unsafe {
+            let rng = alloc(borosh13());
+            free(rng);
+        }
     }
 }
