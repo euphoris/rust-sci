@@ -2,6 +2,7 @@ extern mod std;
 
 #[cfg(test)]
 mod test {
+    use sci::*;
     use dist::*;
     use random::*;
 
@@ -31,4 +32,42 @@ mod test {
             free(rng);
         }
     }
+    #[test]
+    fn test_vector(){
+        let v = vector::zeros(3);
+        v.set(1,3.0);
+        assert!(v.get(1) == 3.0);
+
+        v.set_all(10.0);
+        assert!(v.get(0) == 10.0);
+        assert!(v.get(1) == 10.0);
+        assert!(v.get(2) == 10.0);
+
+        v.set_zero();
+        assert!(v.get(1) == 0.0);
+
+        v.set_basis(0);
+        assert!(v.get(0) == 1.0);
+        assert!(v.get(1) == 0.0);
+
+        let mut w = vector::zeros(3);
+        w.set(0, 4.0);
+        w = w + v;
+        assert!(w.get(0) == 5.0);
+
+        w = w - v;
+        assert!(w.get(0) == 4.0);
+    }
+
+    #[test]
+    fn test_as_vector(){
+        let v = vector::as_vector(@[1.0,2.0,3.0]);
+        let w = vector::as_vector(@[4.0,5.0,6.0]);
+        let u = v + w;
+        assert!(v.get(0) == 1.0);
+        assert!(w.get(0) == 4.0);
+        assert!(u.get(0) == 5.0);
+    }
+
+
 }
