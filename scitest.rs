@@ -70,4 +70,21 @@ mod test {
     }
 
 
+    #[test]
+    fn test_matrix(){
+        let m1 = matrix::zeros(2,2);
+        m1.set_all(1.0);
+        assert!(m1.get(0, 0) == 1.0);
+
+        let m2 = matrix::zeros(2,2);
+        m2.set_all(2.0);
+        assert!(m2.get(0, 0) == 2.0);
+
+        let mut m = m1 + m2;
+        assert!(m.get(0,0) == 3.0);
+
+        m = m - m1;
+        assert!(m.get(0,0) == 2.0);
+
+    }
 }

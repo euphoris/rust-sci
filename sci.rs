@@ -2,6 +2,7 @@ use core::libc::{c_double, c_int, c_void, size_t};
 
 
 type gsl_vector = c_void;
+type gsl_matrix = c_void;
 
 extern mod gsl {
     // vector
@@ -22,6 +23,23 @@ extern mod gsl {
     fn gsl_vector_div (a: *gsl_vector, b: *gsl_vector) -> c_int;
     fn gsl_vector_scale (a: *gsl_vector, x: c_double) -> c_int;
     fn gsl_vector_add_constant (a: *gsl_vector, x: c_double) -> c_int;
+
+    // matrix
+    fn gsl_matrix_alloc(n1: size_t, n2: size_t) -> *gsl_matrix;
+    fn gsl_matrix_calloc(n1: size_t, n2: size_t) -> *gsl_matrix;
+    fn gsl_matrix_free (m: *gsl_matrix);
+
+    fn gsl_matrix_get (m: *gsl_matrix, i: size_t, j: size_t) -> c_double;
+    fn gsl_matrix_set (m: *gsl_matrix, i: size_t, j: size_t, x: c_double);
+
+    fn gsl_matrix_set_all (m: *gsl_matrix, x: c_double);
+    fn gsl_matrix_set_zero (m: *gsl_matrix);
+
+    fn gsl_matrix_add (a: *gsl_matrix, b: *gsl_matrix) -> c_int;
+    fn gsl_matrix_sub (a: *gsl_matrix, b: *gsl_matrix) -> c_int;
+    fn gsl_matrix_scale (a: *gsl_matrix, x: c_double) -> c_int;
+    fn gsl_matrix_add_constant (a: *gsl_matrix, x: c_double) -> c_int;
+
 }
 
 
@@ -133,6 +151,75 @@ impl Div<vector, vector> for vector {
             let new = vector::zeros(size);
             gsl::gsl_vector_add(new.ptr, self.ptr);
             gsl::gsl_vector_div(new.ptr, rhs.ptr);
+            new
+        }
+    }
+}
+
+pub struct matrix {
+    size: (size_t, size_t),
+    ptr: *c_void
+}
+
+
+pub impl matrix {
+    fn zeros(n1: size_t, n2: size_t) -> matrix {
+        unsafe { matrix{ size: (n1, n2), ptr: gsl::gsl_matrix_calloc(n1, n2) } }
+    }
+
+    fn get(&self, i: size_t, j: size_t) -> f64 {
+        unsafe { gsl::gsl_matrix_get(self.ptr, i, j) }
+    }
+
+    fn set(&self, i: size_t, j: size_t, x: f64){
+        unsafe { gsl::gsl_matrix_set(self.ptr, i, j, x) }
+    }
+
+    fn set_all(&self, x: f64){
+        unsafe { gsl::gsl_matrix_set_all(self.ptr, x) }
+    }
+
+    fn set_zero(&self){
+        unsafe { gsl::gsl_matrix_set_zero(self.ptr) }
+    }
+
+    fn scale(&self, x:f64) -> i32 {
+        unsafe { gsl::gsl_matrix_scale(self.ptr, x) }
+    }
+
+    fn add_constant(&self, x:f64) -> i32 {
+        unsafe { gsl::gsl_matrix_add_constant(self.ptr, x) }
+    }
+}
+
+
+impl Drop for matrix {
+    fn finalize(&self) {
+        unsafe { gsl::gsl_matrix_free(self.ptr); }
+    }
+}
+
+
+impl Add<matrix, matrix> for matrix {
+    fn add(&self, rhs: &matrix) -> matrix{
+        unsafe {
+            let (n1, n2) = self.size;
+            let new = matrix::zeros(n1, n2);
+            gsl::gsl_matrix_add(new.ptr, self.ptr);
+            gsl::gsl_matrix_add(new.ptr, rhs.ptr);
+            new
+        }
+    }
+}
+
+
+impl Sub<matrix, matrix> for matrix {
+    fn sub(&self, rhs: &matrix) -> matrix{
+        unsafe {
+            let (n1, n2) = self.size;
+            let new = matrix::zeros(n1, n2);
+            gsl::gsl_matrix_add(new.ptr, self.ptr);
+            gsl::gsl_matrix_sub(new.ptr, rhs.ptr);
             new
         }
     }
