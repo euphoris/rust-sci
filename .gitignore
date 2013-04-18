@@ -2,3 +2,5 @@
 *.dylib
 *.so
 scitest~
+*.a
+*.o
