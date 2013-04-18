@@ -1,20 +1,7 @@
-use core::libc::{c_double, c_int, size_t};
+use core::libc::{c_double, c_int, c_void, size_t};
 
 
-struct gsl_block {
-    size: size_t,
-    data: *c_double
-}
-
-
-struct gsl_vector {
-    size: size_t,
-    stride: size_t,
-    data: *c_double,
-    block: *gsl_block,
-    owner: c_int
-}
-
+type gsl_vector = c_void;
 
 extern mod gsl {
     // vector
