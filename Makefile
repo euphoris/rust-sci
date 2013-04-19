@@ -1,11 +1,12 @@
 RUSTC := rustc
 RUSTC_OPTS := -L .
 SOURCE := sci.rc
+CC_OPTS := -fPIC
 
 all: build
 
 bindlib:
-	gcc -c gslbind.c -o gslbind.o
+	gcc $(CC_OPTS) -c gslbind.c -o gslbind.o
 	ar rcs libgslbind.a gslbind.o
 
 build: $(SOURCE) bindlib
