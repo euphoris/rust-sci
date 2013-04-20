@@ -34,7 +34,7 @@ mod test {
     }
     #[test]
     fn test_vector(){
-        let v = vector::zeros(3);
+        let mut v = vector::zeros(3);
         v.set(1,3.0);
         assert!(v.get(1) == 3.0);
 
@@ -83,11 +83,11 @@ mod test {
 
     #[test]
     fn test_matrix(){
-        let m1 = matrix::zeros(2,2);
+        let mut m1 = matrix::zeros(2,2);
         m1.set_all(1.0);
         assert!(m1.get(0, 0) == 1.0);
 
-        let m2 = matrix::zeros(2,2);
+        let mut m2 = matrix::zeros(2,2);
         m2.set_all(2.0);
         assert!(m2.get(0, 0) == 2.0);
 
@@ -100,7 +100,7 @@ mod test {
         assert!(m == m);
 
         // clone
-        let m3 = m.clone();
+        let mut m3 = m.clone();
         assert!(m.get(0, 0) == m3.get(0, 0));
         m3.set(0, 0, m.get(0, 0)+1.0);
         assert!(m.get(0, 0) != m3.get(0, 0));

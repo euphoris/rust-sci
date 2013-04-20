@@ -89,19 +89,19 @@ pub impl vector {
         unsafe { gsl::gsl_vector_get(self.ptr, i) }
     }
 
-    fn set(&self, i: size_t, x: f64){
+    fn set(&mut self, i: size_t, x: f64){
         unsafe { gsl::gsl_vector_set(self.ptr, i, x) }
     }
 
-    fn set_all(&self, x: f64){
+    fn set_all(&mut self, x: f64){
         unsafe { gsl::gsl_vector_set_all(self.ptr, x) }
     }
 
-    fn set_zero(&self){
+    fn set_zero(&mut self){
         unsafe { gsl::gsl_vector_set_zero(self.ptr) }
     }
 
-    fn set_basis(&self, i: size_t) -> i32 {
+    fn set_basis(&mut self, i: size_t) -> i32 {
         unsafe { gsl::gsl_vector_set_basis (self.ptr, i) }
     }
 
@@ -230,15 +230,15 @@ pub impl matrix {
         unsafe { gsl::gsl_matrix_get(self.ptr, i, j) }
     }
 
-    fn set(&self, i: size_t, j: size_t, x: f64){
+    fn set(&mut self, i: size_t, j: size_t, x: f64){
         unsafe { gsl::gsl_matrix_set(self.ptr, i, j, x) }
     }
 
-    fn set_all(&self, x: f64){
+    fn set_all(&mut self, x: f64){
         unsafe { gsl::gsl_matrix_set_all(self.ptr, x) }
     }
 
-    fn set_zero(&self){
+    fn set_zero(&mut self){
         unsafe { gsl::gsl_matrix_set_zero(self.ptr) }
     }
 
