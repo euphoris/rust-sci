@@ -63,6 +63,15 @@ mod test {
         assert!(u == v);
         u.set(0, v.get(0)+1.0);
         assert!(u != v);
+
+        // min max
+        v = vector::as_vector(@[3.0, 2.0, 1.0]);
+        assert!(v.min() == 1.0);
+        assert!(v.max() == 3.0);
+        assert!(v.minmax() == (1.0, 3.0));
+        assert!(v.maxindex() == 0);
+        assert!(v.minindex() == 2);
+        assert!(v.minmax_index() == (2, 0));
     }
 
 
@@ -106,5 +115,19 @@ mod test {
         assert!(m != m3);
 
         assert!(matrix::zeros(2,2).isnull());
+
+        // min max
+        m = matrix::zeros(2,2);
+        m.set(0, 0, 4.0);
+        m.set(0, 1, 3.0);
+        m.set(1, 0, 2.0);
+        m.set(1, 1, 1.0);
+
+        assert!(m.min() == 1.0);
+        assert!(m.max() == 4.0);
+        assert!(m.minmax() == (1.0, 4.0));
+        assert!(m.maxindex() == (0, 0));
+        assert!(m.minindex() == (1, 1));
+        assert!(m.minmax_index() == ((1, 1), (0, 0)));
     }
 }

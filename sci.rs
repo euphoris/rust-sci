@@ -33,6 +33,13 @@ extern mod gsl {
     fn gsl_vector_isnonneg (m: *gsl_vector) -> c_int;
     fn gsl_vector_equal (a: *gsl_vector, b: *gsl_vector) -> c_int;
 
+    fn gsl_vector_max (v: *gsl_vector) -> c_double;
+    fn gsl_vector_min (v: *gsl_vector) -> c_double;
+    fn gsl_vector_minmax (v: *gsl_vector, min_out: *mut c_double, max_out: *mut c_double);
+    fn gsl_vector_max_index (v: *gsl_vector) -> size_t;
+    fn gsl_vector_min_index (v: *gsl_vector) -> size_t;
+    fn gsl_vector_minmax_index (v: *gsl_vector, imin: *mut size_t, imax: *mut size_t);
+
     // matrix
     fn gsl_matrix_alloc(n1: size_t, n2: size_t) -> *gsl_matrix;
     fn gsl_matrix_calloc(n1: size_t, n2: size_t) -> *gsl_matrix;
@@ -57,6 +64,13 @@ extern mod gsl {
     fn gsl_matrix_isneg (m: *gsl_matrix) -> c_int;
     fn gsl_matrix_isnonneg (m: *gsl_matrix) -> c_int;
     fn gsl_matrix_equal (a: *gsl_matrix, b: *gsl_matrix) -> c_int;
+
+    fn gsl_matrix_max (m: *gsl_matrix) -> c_double;
+    fn gsl_matrix_min (m: *gsl_matrix) -> c_double;
+    fn gsl_matrix_minmax (m: *gsl_matrix, min_out: *mut c_double, max_out: *mut c_double);
+    fn gsl_matrix_max_index (m: *gsl_matrix, imax: *mut size_t, jmax: *mut size_t);
+    fn gsl_matrix_min_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t);
+    fn gsl_matrix_minmax_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t, imax: *mut size_t, jmax: *mut size_t);
 }
 
 
@@ -127,6 +141,48 @@ pub impl vector {
 
     fn isnonneg(&self) -> bool {
         unsafe { gsl::gsl_vector_isnonneg(self.ptr) == 1 }
+    }
+
+    fn max(&self) -> f64 {
+        unsafe { gsl::gsl_vector_max(self.ptr) }
+    }
+
+    fn min(&self) -> f64 {
+        unsafe { gsl::gsl_vector_min(self.ptr) }
+    }
+
+    fn minmax(&self) -> (f64, f64) {
+        unsafe {
+            let mut min = ~0.0;
+            let mut max = ~0.0;
+            gsl::gsl_vector_minmax(self.ptr,
+                                   ptr::to_mut_unsafe_ptr(min),
+                                   ptr::to_mut_unsafe_ptr(max));
+            (*min, *max)
+        }
+    }
+
+    fn maxindex(&self) -> u64 {
+        unsafe {
+            gsl::gsl_vector_max_index(self.ptr)
+        }
+    }
+
+    fn minindex(&self) -> u64 {
+        unsafe {
+            gsl::gsl_vector_min_index(self.ptr)
+        }
+    }
+
+    fn minmax_index(&self) -> (u64, u64) {
+        unsafe {
+            let mut imin = ~0;
+            let mut imax = ~0;
+            gsl::gsl_vector_minmax_index(self.ptr,
+                                         ptr::to_mut_unsafe_ptr(imin),
+                                         ptr::to_mut_unsafe_ptr(imax));
+            (*imin, *imax)
+        }
     }
 }
 
@@ -257,6 +313,63 @@ pub impl matrix {
     fn isnonneg(&self) -> bool {
         unsafe { gsl::gsl_matrix_isnonneg(self.ptr) == 1 }
     }
+
+    fn max(&self) -> f64 {
+        unsafe { gsl::gsl_matrix_max(self.ptr) }
+    }
+
+    fn min(&self) -> f64 {
+        unsafe { gsl::gsl_matrix_min(self.ptr) }
+    }
+
+    fn minmax(&self) -> (f64, f64) {
+        unsafe {
+            let mut min = ~0.0;
+            let mut max = ~0.0;
+            gsl::gsl_matrix_minmax(self.ptr,
+                                   ptr::to_mut_unsafe_ptr(min),
+                                   ptr::to_mut_unsafe_ptr(max));
+            (*min, *max)
+        }
+    }
+
+    fn maxindex(&self) -> (u64, u64) {
+        unsafe {
+            let mut imax = ~0;
+            let mut jmax = ~0;
+            gsl::gsl_matrix_max_index(self.ptr,
+                                      ptr::to_mut_unsafe_ptr(imax),
+                                      ptr::to_mut_unsafe_ptr(jmax));
+            (*imax, *jmax)
+        }
+    }
+
+    fn minindex(&self) -> (u64, u64) {
+        unsafe {
+            let mut imin = ~0;
+            let mut jmin = ~0;
+            gsl::gsl_matrix_min_index(self.ptr,
+                                      ptr::to_mut_unsafe_ptr(imin),
+                                      ptr::to_mut_unsafe_ptr(jmin));
+            (*imin, *jmin)
+        }
+    }
+
+    fn minmax_index(&self) -> ((u64, u64), (u64, u64)) {
+        unsafe {
+            let mut imax = ~0;
+            let mut jmax = ~0;
+            let mut imin = ~0;
+            let mut jmin = ~0;
+            gsl::gsl_matrix_minmax_index(self.ptr,
+                                      ptr::to_mut_unsafe_ptr(imin),
+                                      ptr::to_mut_unsafe_ptr(jmin),
+                                      ptr::to_mut_unsafe_ptr(imax),
+                                      ptr::to_mut_unsafe_ptr(jmax));
+            ((*imin, *jmin), (*imax, *jmax)) 
+        }
+    }
+
 }
 
 
