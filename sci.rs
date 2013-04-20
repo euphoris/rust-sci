@@ -74,6 +74,15 @@ extern mod gsl {
 }
 
 
+extern mod gslcblas {
+}
+
+
+extern mod gslbind {
+    fn mul_matrix(a: *gsl_matrix, b: *gsl_matrix, c: *gsl_matrix);
+}
+
+
 pub struct vector {
     size: size_t,
     ptr: *gsl_vector
@@ -424,6 +433,19 @@ impl Sub<matrix, matrix> for matrix {
             let new = self.clone();
             gsl::gsl_matrix_sub(new.ptr, rhs.ptr);
             new
+        }
+    }
+}
+
+
+impl Mul<matrix, matrix> for matrix {
+    fn mul(&self, rhs: &matrix) -> matrix {
+        unsafe {
+            let (n1, _) = self.size;
+            let (_, n2) = rhs.size;
+            let c = matrix::zeros(n1, n2);
+            gslbind::mul_matrix(self.ptr, rhs.ptr, c.ptr);
+            c
         }
     }
 }

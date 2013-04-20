@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_matrix.h> 
 #include <gsl/gsl_rng.h>
 
 const gsl_rng_type *rng_borosh13(){ return gsl_rng_borosh13; }
@@ -65,3 +68,7 @@ const gsl_rng_type *rng_zuf(){ return gsl_rng_zuf; }
 
 const gsl_rng_type *rng_default(){ return gsl_rng_default; }
 /* unsigned long int gsl_rng_default_seed; */
+
+void mul_matrix(gsl_matrix* A, gsl_matrix* B, gsl_matrix* C){
+    gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, A, B, 0.0, C);
+}

@@ -129,5 +129,12 @@ mod test {
         assert!(m.maxindex() == (0, 0));
         assert!(m.minindex() == (1, 1));
         assert!(m.minmax_index() == ((1, 1), (0, 0)));
+
+        // matrix multiplication
+        let mul = m * m;
+        assert!(mul.get(0, 0) == 4.0*4.0+3.0*2.0);
+        assert!(mul.get(0, 1) == 4.0*3.0+3.0*1.0);
+        assert!(mul.get(1, 0) == 2.0*4.0+1.0*2.0);
+        assert!(mul.get(1, 1) == 2.0*3.0+1.0*1.0);
     }
 }
