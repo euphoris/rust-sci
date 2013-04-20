@@ -60,9 +60,9 @@ mod test {
 
         // clone
         let mut u = v.clone();
-        assert!(u.get(0) == v.get(0));
+        assert!(u == v);
         u.set(0, v.get(0)+1.0);
-        assert!(u.get(0) != v.get(0));
+        assert!(u != v);
     }
 
 
@@ -101,9 +101,9 @@ mod test {
 
         // clone
         let mut m3 = m.clone();
-        assert!(m.get(0, 0) == m3.get(0, 0));
+        assert!(m == m3);
         m3.set(0, 0, m.get(0, 0)+1.0);
-        assert!(m.get(0, 0) != m3.get(0, 0));
+        assert!(m != m3);
 
         assert!(matrix::zeros(2,2).isnull());
     }
