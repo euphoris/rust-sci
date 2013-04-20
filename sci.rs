@@ -24,6 +24,12 @@ extern mod gsl {
     fn gsl_vector_scale (a: *gsl_vector, x: c_double) -> c_int;
     fn gsl_vector_add_constant (a: *gsl_vector, x: c_double) -> c_int;
 
+    fn gsl_vector_isnull (m: *gsl_vector) -> c_int;
+    fn gsl_vector_ispos (m: *gsl_vector) -> c_int;
+    fn gsl_vector_isneg (m: *gsl_vector) -> c_int;
+    fn gsl_vector_isnonneg (m: *gsl_vector) -> c_int;
+    fn gsl_vector_equal (a: *gsl_vector, b: *gsl_vector) -> c_int;
+
     // matrix
     fn gsl_matrix_alloc(n1: size_t, n2: size_t) -> *gsl_matrix;
     fn gsl_matrix_calloc(n1: size_t, n2: size_t) -> *gsl_matrix;
@@ -40,6 +46,11 @@ extern mod gsl {
     fn gsl_matrix_scale (a: *gsl_matrix, x: c_double) -> c_int;
     fn gsl_matrix_add_constant (a: *gsl_matrix, x: c_double) -> c_int;
 
+    fn gsl_matrix_isnull (m: *gsl_matrix) -> c_int;
+    fn gsl_matrix_ispos (m: *gsl_matrix) -> c_int;
+    fn gsl_matrix_isneg (m: *gsl_matrix) -> c_int;
+    fn gsl_matrix_isnonneg (m: *gsl_matrix) -> c_int;
+    fn gsl_matrix_equal (a: *gsl_matrix, b: *gsl_matrix) -> c_int;
 }
 
 
@@ -95,12 +106,43 @@ pub impl vector {
     fn add_constant(&self, x:f64) -> i32 {
         unsafe { gsl::gsl_vector_add_constant(self.ptr, x) }
     }
+
+    fn isnull(&self) -> bool {
+        unsafe { gsl::gsl_vector_isnull(self.ptr) == 1 }
+    }
+
+    fn ispos(&self) -> bool {
+        unsafe { gsl::gsl_vector_ispos(self.ptr) == 1 }
+    }
+
+    fn isneg(&self) -> bool {
+        unsafe { gsl::gsl_vector_isneg(self.ptr) == 1 }
+    }
+
+    fn isnonneg(&self) -> bool {
+        unsafe { gsl::gsl_vector_isnonneg(self.ptr) == 1 }
+    }
 }
 
 
 impl Drop for vector {
     fn finalize(&self) {
         unsafe { gsl::gsl_vector_free(self.ptr); }
+    }
+}
+
+
+impl Eq for vector {
+    fn eq(&self, other: &vector) -> bool {
+        unsafe {
+            gsl::gsl_vector_equal(self.ptr, other.ptr) == 1 
+        }
+    }
+
+    fn ne(&self, other: &vector) -> bool {
+        unsafe {
+            gsl::gsl_vector_equal(self.ptr, other.ptr) == 0
+        }
     }
 }
 
@@ -190,12 +232,43 @@ pub impl matrix {
     fn add_constant(&self, x:f64) -> i32 {
         unsafe { gsl::gsl_matrix_add_constant(self.ptr, x) }
     }
+    
+    fn isnull(&self) -> bool {
+        unsafe { gsl::gsl_matrix_isnull(self.ptr) == 1 }
+    }
+
+    fn ispos(&self) -> bool {
+        unsafe { gsl::gsl_matrix_ispos(self.ptr) == 1 }
+    }
+
+    fn isneg(&self) -> bool {
+        unsafe { gsl::gsl_matrix_isneg(self.ptr) == 1 }
+    }
+
+    fn isnonneg(&self) -> bool {
+        unsafe { gsl::gsl_matrix_isnonneg(self.ptr) == 1 }
+    }
 }
 
 
 impl Drop for matrix {
     fn finalize(&self) {
         unsafe { gsl::gsl_matrix_free(self.ptr); }
+    }
+}
+
+
+impl Eq for matrix {
+    fn eq(&self, other: &matrix) -> bool {
+        unsafe {
+            gsl::gsl_matrix_equal(self.ptr, other.ptr) == 1
+        }
+    }
+
+    fn ne(&self, other: &matrix) -> bool {
+        unsafe {
+            gsl::gsl_matrix_equal(self.ptr, other.ptr) == 0
+        }
     }
 }
 

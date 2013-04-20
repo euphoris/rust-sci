@@ -67,6 +67,10 @@ mod test {
         assert!(v.get(0) == 1.0);
         assert!(w.get(0) == 4.0);
         assert!(u.get(0) == 5.0);
+
+        assert!(v == v);
+
+        assert!(vector::zeros(2).isnull());
     }
 
 
@@ -86,5 +90,8 @@ mod test {
         m = m - m1;
         assert!(m.get(0,0) == 2.0);
 
+        assert!(m == m);
+
+        assert!(matrix::zeros(2,2).isnull());
     }
 }
