@@ -167,9 +167,7 @@ impl Eq for vector {
 impl Add<vector, vector> for vector {
     fn add(&self, rhs: &vector) -> vector{
         unsafe {
-            let size = self.size;
-            let new = vector::zeros(size);
-            gsl::gsl_vector_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_vector_add(new.ptr, rhs.ptr);
             new
         }
@@ -180,9 +178,7 @@ impl Add<vector, vector> for vector {
 impl Sub<vector, vector> for vector {
     fn sub(&self, rhs: &vector) -> vector{
         unsafe {
-            let size = self.size;
-            let new = vector::zeros(size);
-            gsl::gsl_vector_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_vector_sub(new.ptr, rhs.ptr);
             new
         }
@@ -193,9 +189,7 @@ impl Sub<vector, vector> for vector {
 impl Mul<vector, vector> for vector {
     fn mul(&self, rhs: &vector) -> vector{
         unsafe {
-            let size = self.size;
-            let new = vector::zeros(size);
-            gsl::gsl_vector_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_vector_mul(new.ptr, rhs.ptr);
             new
         }
@@ -206,9 +200,7 @@ impl Mul<vector, vector> for vector {
 impl Div<vector, vector> for vector {
     fn div(&self, rhs: &vector) -> vector{
         unsafe {
-            let size = self.size;
-            let new = vector::zeros(size);
-            gsl::gsl_vector_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_vector_div(new.ptr, rhs.ptr);
             new
         }
@@ -305,9 +297,7 @@ impl Eq for matrix {
 impl Add<matrix, matrix> for matrix {
     fn add(&self, rhs: &matrix) -> matrix{
         unsafe {
-            let (n1, n2) = self.size;
-            let new = matrix::zeros(n1, n2);
-            gsl::gsl_matrix_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_matrix_add(new.ptr, rhs.ptr);
             new
         }
@@ -318,9 +308,7 @@ impl Add<matrix, matrix> for matrix {
 impl Sub<matrix, matrix> for matrix {
     fn sub(&self, rhs: &matrix) -> matrix{
         unsafe {
-            let (n1, n2) = self.size;
-            let new = matrix::zeros(n1, n2);
-            gsl::gsl_matrix_add(new.ptr, self.ptr);
+            let new = self.clone();
             gsl::gsl_matrix_sub(new.ptr, rhs.ptr);
             new
         }
