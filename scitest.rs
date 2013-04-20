@@ -57,7 +57,14 @@ mod test {
 
         w = w - v;
         assert!(w.get(0) == 4.0);
+
+        // clone
+        let mut u = v.clone();
+        assert!(u.get(0) == v.get(0));
+        u.set(0, v.get(0)+1.0);
+        assert!(u.get(0) != v.get(0));
     }
+
 
     #[test]
     fn test_as_vector(){
@@ -91,6 +98,12 @@ mod test {
         assert!(m.get(0,0) == 2.0);
 
         assert!(m == m);
+
+        // clone
+        let m3 = m.clone();
+        assert!(m.get(0, 0) == m3.get(0, 0));
+        m3.set(0, 0, m.get(0, 0)+1.0);
+        assert!(m.get(0, 0) != m3.get(0, 0));
 
         assert!(matrix::zeros(2,2).isnull());
     }

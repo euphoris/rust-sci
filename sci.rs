@@ -24,6 +24,9 @@ extern mod gsl {
     fn gsl_vector_scale (a: *gsl_vector, x: c_double) -> c_int;
     fn gsl_vector_add_constant (a: *gsl_vector, x: c_double) -> c_int;
 
+    fn gsl_vector_memcpy (dest: *gsl_vector, src: *gsl_vector) -> c_int;
+    fn gsl_vector_swap (w: *gsl_vector, v: *gsl_vector) -> c_int;
+
     fn gsl_vector_isnull (m: *gsl_vector) -> c_int;
     fn gsl_vector_ispos (m: *gsl_vector) -> c_int;
     fn gsl_vector_isneg (m: *gsl_vector) -> c_int;
@@ -45,6 +48,9 @@ extern mod gsl {
     fn gsl_matrix_sub (a: *gsl_matrix, b: *gsl_matrix) -> c_int;
     fn gsl_matrix_scale (a: *gsl_matrix, x: c_double) -> c_int;
     fn gsl_matrix_add_constant (a: *gsl_matrix, x: c_double) -> c_int;
+
+    fn gsl_matrix_memcpy (dest: *gsl_matrix, src: *gsl_matrix) -> c_int;
+    fn gsl_matrix_swap (w: *gsl_matrix, v: *gsl_matrix) -> c_int;
 
     fn gsl_matrix_isnull (m: *gsl_matrix) -> c_int;
     fn gsl_matrix_ispos (m: *gsl_matrix) -> c_int;
@@ -128,6 +134,17 @@ pub impl vector {
 impl Drop for vector {
     fn finalize(&self) {
         unsafe { gsl::gsl_vector_free(self.ptr); }
+    }
+}
+
+
+impl Clone for vector {
+    fn clone(&self) -> vector {
+        unsafe {
+            let v = vector::zeros(self.size);
+            gsl::gsl_vector_memcpy(v.ptr, self.ptr);
+            v
+        }
     }
 }
 
@@ -254,6 +271,18 @@ pub impl matrix {
 impl Drop for matrix {
     fn finalize(&self) {
         unsafe { gsl::gsl_matrix_free(self.ptr); }
+    }
+}
+
+
+impl Clone for matrix {
+    fn clone(&self) -> matrix {
+        unsafe {
+            let (row, col) = self.size;
+            let m = matrix::zeros(row, col);
+            gsl::gsl_matrix_memcpy(m.ptr, self.ptr);
+            m
+        }
     }
 }
 
