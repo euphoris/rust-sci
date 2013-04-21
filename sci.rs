@@ -1,8 +1,8 @@
 use core::libc::{c_double, c_int, c_void, size_t};
 
 
-type gsl_vector = c_void;
-type gsl_matrix = c_void;
+pub type gsl_vector = c_void;
+pub type gsl_matrix = c_void;
 
 extern mod gsl {
     // vector

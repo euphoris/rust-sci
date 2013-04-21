@@ -3,6 +3,7 @@
 #[crate_type = "lib"];
 
 pub mod sci;
+pub mod linalg;
 pub mod random;
 pub mod dist;
 

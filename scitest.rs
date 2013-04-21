@@ -3,6 +3,7 @@ extern mod std;
 #[cfg(test)]
 mod test {
     use sci::*;
+    use linalg::*;
     use dist::*;
     use random::*;
 
@@ -136,5 +137,21 @@ mod test {
         assert!(mul.get(0, 1) == 4.0*3.0+3.0*1.0);
         assert!(mul.get(1, 0) == 2.0*4.0+1.0*2.0);
         assert!(mul.get(1, 1) == 2.0*3.0+1.0*1.0);
+    }
+
+    #[test]
+    fn test_linalg(){
+        let mut m = matrix::zeros(2,2);
+        m.set(0, 0, 1.0);
+        m.set(0, 1, 3.0);
+        m.set(1, 0, 2.0);
+        m.set(1, 1, 4.0);
+
+        let lu = LU::decomp(m);
+        assert!(lu.mat.get(0,0) == 2.0);
+        assert!(lu.mat.get(0,1) == 4.0);
+        assert!(lu.mat.get(1,0) == 0.5);
+        assert!(lu.mat.get(1,1) == 1.0);
+
     }
 }
