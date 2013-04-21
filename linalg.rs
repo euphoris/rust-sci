@@ -2,7 +2,7 @@ use core::libc::{c_int, c_void, size_t};
 use sci::{matrix, gsl_matrix};
 
 
-type gsl_permutation = c_void;
+pub type gsl_permutation = c_void;
 
 
 extern mod gsl {
@@ -40,7 +40,7 @@ pub struct LU {
 
 
 pub impl LU {
-    fn decomp(m: matrix) -> LU {
+    fn decomp(m: &matrix) -> LU {
         let mut mat = m.clone();
         let (n, _) = mat.size;
         let mut p = permutation::new(n);

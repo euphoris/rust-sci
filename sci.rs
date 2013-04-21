@@ -1,4 +1,5 @@
 use core::libc::{c_double, c_int, c_void, size_t};
+use linalg::{LU, gsl_permutation};
 
 
 pub type gsl_vector = c_void;
@@ -71,6 +72,8 @@ extern mod gsl {
     fn gsl_matrix_max_index (m: *gsl_matrix, imax: *mut size_t, jmax: *mut size_t);
     fn gsl_matrix_min_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t);
     fn gsl_matrix_minmax_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t, imax: *mut size_t, jmax: *mut size_t);
+
+    fn gsl_linalg_LU_invert (LU: *gsl_matrix, p: *gsl_permutation, inverse: *gsl_matrix) -> c_int;
 }
 
 
@@ -379,6 +382,15 @@ pub impl matrix {
         }
     }
 
+    fn inverse(&self) -> matrix {
+        let lu = LU::decomp(self);
+        let (n1, n2) = self.size;
+        let inv = matrix::zeros(n1, n2);
+        unsafe {
+            gsl::gsl_linalg_LU_invert(lu.mat.ptr, lu.p.ptr, inv.ptr);
+        }
+        inv
+    }
 }
 
 

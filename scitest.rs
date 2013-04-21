@@ -137,6 +137,13 @@ mod test {
         assert!(mul.get(0, 1) == 4.0*3.0+3.0*1.0);
         assert!(mul.get(1, 0) == 2.0*4.0+1.0*2.0);
         assert!(mul.get(1, 1) == 2.0*3.0+1.0*1.0);
+
+        // inverse
+        let inv = m.inverse();
+        assert!(inv.get(0,0) == -0.5);
+        assert!(inv.get(0,1) ==  1.5);
+        assert!(inv.get(1,0) ==  1.0);
+        assert!(inv.get(1,1) == -2.0);
     }
 
     #[test]
@@ -147,11 +154,10 @@ mod test {
         m.set(1, 0, 2.0);
         m.set(1, 1, 4.0);
 
-        let lu = LU::decomp(m);
+        let lu = LU::decomp(&m);
         assert!(lu.mat.get(0,0) == 2.0);
         assert!(lu.mat.get(0,1) == 4.0);
         assert!(lu.mat.get(1,0) == 0.5);
         assert!(lu.mat.get(1,1) == 1.0);
-
     }
 }
