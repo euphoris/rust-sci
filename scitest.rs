@@ -117,13 +117,14 @@ mod test {
 
         assert!(matrix::zeros(2,2).isnull());
 
-        // min max
-        m = matrix::zeros(2,2);
-        m.set(0, 0, 4.0);
-        m.set(0, 1, 3.0);
-        m.set(1, 0, 2.0);
-        m.set(1, 1, 1.0);
+        // from_array
+        m = matrix::from_array(&[4.0, 3.0, 2.0, 1.0], 2, 2);
+        assert!(m.get(0, 0) == 4.0);
+        assert!(m.get(0, 1) == 3.0);
+        assert!(m.get(1, 0) == 2.0);
+        assert!(m.get(1, 1) == 1.0);
 
+        // min max
         assert!(m.min() == 1.0);
         assert!(m.max() == 4.0);
         assert!(m.minmax() == (1.0, 4.0));
@@ -133,17 +134,13 @@ mod test {
 
         // matrix multiplication
         let mul = m * m;
-        assert!(mul.get(0, 0) == 4.0*4.0+3.0*2.0);
-        assert!(mul.get(0, 1) == 4.0*3.0+3.0*1.0);
-        assert!(mul.get(1, 0) == 2.0*4.0+1.0*2.0);
-        assert!(mul.get(1, 1) == 2.0*3.0+1.0*1.0);
+        assert!(mul.similar(&matrix::from_array(&[
+            4.0*4.0+3.0*2.0, 4.0*3.0+3.0*1.0,
+            2.0*4.0+1.0*2.0, 2.0*3.0+1.0*1.0], 2, 2), 0.001));
 
         // inverse
         let inv = m.inverse();
-        assert!(inv.get(0,0) == -0.5);
-        assert!(inv.get(0,1) ==  1.5);
-        assert!(inv.get(1,0) ==  1.0);
-        assert!(inv.get(1,1) == -2.0);
+        assert!(inv == matrix::from_array(&[-0.5, 1.5, 1.0, -2.0], 2, 2));
 
         // transpose
         let t = m.t();
@@ -153,30 +150,21 @@ mod test {
 
     #[test]
     fn test_linalg(){
-        let mut m = matrix::zeros(2,2);
-        m.set(0, 0, 1.0);
-        m.set(0, 1, 3.0);
-        m.set(1, 0, 2.0);
-        m.set(1, 1, 4.0);
+        let m = matrix::from_array(&[1.0, 3.0, 2.0, 4.0], 2, 2);
 
         let lu = LU::decomp(&m);
-        assert!(lu.mat.get(0,0) == 2.0);
-        assert!(lu.mat.get(0,1) == 4.0);
-        assert!(lu.mat.get(1,0) == 0.5);
-        assert!(lu.mat.get(1,1) == 1.0);
+        assert!(lu.mat == matrix::from_array(&[2.0, 4.0, 0.5, 1.0], 2, 2));
 
         let sv = SV::decomp(&m);
-        assert!(approx(sv.U.get(0,0), -0.5760484));
-        assert!(approx(sv.U.get(0,1), -0.8174156));
-        assert!(approx(sv.U.get(1,0), -0.8174156));
-        assert!(approx(sv.U.get(1,1),  0.5760484));
+        assert!(sv.U.similar(&matrix::from_array(&[
+            -0.576, -0.817, 
+            -0.817,  0.576], 2, 2), 0.001));
 
         assert!(approx(sv.S.get(0), 5.4649857));
         assert!(approx(sv.S.get(1), 0.3659662));
 
-        assert!(approx(sv.V.get(0,0), -0.4045536));
-        assert!(approx(sv.V.get(0,1),  0.9145143));
-        assert!(approx(sv.V.get(1,0), -0.9145143));
-        assert!(approx(sv.V.get(1,1), -0.4045536));
+        assert!(sv.V.similar(&matrix::from_array(&[
+            -0.405, 0.915,
+            -0.915, -0.405], 2, 2), 0.001));
     }
 }

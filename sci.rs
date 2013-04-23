@@ -6,6 +6,9 @@ pub type gsl_vector = c_void;
 pub type gsl_matrix = c_void;
 
 extern mod gsl {
+    // floating number comparison
+    fn gsl_fcmp(x: c_double, y: c_double, epsilon: c_double) -> c_int;
+
     // vector
     fn gsl_vector_alloc(n: size_t) -> *gsl_vector;
     fn gsl_vector_calloc(n: size_t) -> *gsl_vector;
@@ -86,6 +89,10 @@ extern mod gslbind {
     fn mul_matrix(a: *gsl_matrix, b: *gsl_matrix, c: *gsl_matrix);
 }
 
+
+pub fn fcmp(x: f64, y: f64, epsilon: f64) -> i32 {
+    unsafe { gsl::gsl_fcmp(x, y, epsilon) }
+}
 
 pub struct vector {
     size: size_t,
@@ -287,6 +294,21 @@ pub impl matrix {
         unsafe { matrix{ size: (n1, n2), ptr: gsl::gsl_matrix_calloc(n1, n2) } }
     }
 
+    fn from_array(vs: &[f64], n1: u64, n2:u64) -> matrix {
+        let mut m = matrix::zeros(n1, n2);
+
+        let mut i = 0;
+        while i < n1 {
+            let mut j = 0;
+            while j < n2 {
+                m.set(i, j, vs[n2*i+j]);
+                j += 1;
+            }
+            i += 1;
+        }
+        m
+    }
+
     fn get(&self, i: size_t, j: size_t) -> f64 {
         unsafe { gsl::gsl_matrix_get(self.ptr, i, j) }
     }
@@ -400,6 +422,27 @@ pub impl matrix {
             gsl::gsl_matrix_transpose_memcpy(m.ptr, self.ptr);
         }
         m
+    }
+
+    fn similar(&self, other:&matrix, epsilon:f64) -> bool {
+        let (n1, n2) = self.size;
+        if self.size != other.size {
+            return false
+        }
+
+        let mut i = 0;
+        while i < n1 {
+            let mut j = 0;
+            while j < n2 {
+                if fcmp(self.get(i, j), other.get(i, j), epsilon) != 0 {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+
+        true
     }
 }
 
