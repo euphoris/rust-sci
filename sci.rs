@@ -72,6 +72,7 @@ extern mod gsl {
     fn gsl_matrix_max_index (m: *gsl_matrix, imax: *mut size_t, jmax: *mut size_t);
     fn gsl_matrix_min_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t);
     fn gsl_matrix_minmax_index (m: *gsl_matrix, imin: *mut size_t, jmin: *mut size_t, imax: *mut size_t, jmax: *mut size_t);
+    fn gsl_matrix_transpose_memcpy (dest: *gsl_matrix, src: *gsl_matrix) -> c_int;
 
     fn gsl_linalg_LU_invert (LU: *gsl_matrix, p: *gsl_permutation, inverse: *gsl_matrix) -> c_int;
 }
@@ -390,6 +391,15 @@ pub impl matrix {
             gsl::gsl_linalg_LU_invert(lu.mat.ptr, lu.p.ptr, inv.ptr);
         }
         inv
+    }
+
+    fn t(&self) -> matrix {
+        let (n1, n2) = self.size;
+        let m = matrix::zeros(n2, n1);
+        unsafe {
+            gsl::gsl_matrix_transpose_memcpy(m.ptr, self.ptr);
+        }
+        m
     }
 }
 

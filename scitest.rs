@@ -144,6 +144,11 @@ mod test {
         assert!(inv.get(0,1) ==  1.5);
         assert!(inv.get(1,0) ==  1.0);
         assert!(inv.get(1,1) == -2.0);
+
+        // transpose
+        let t = m.t();
+        assert!(m.get(0,1) == t.get(1,0));
+        assert!(m.get(1,0) == t.get(0,1));
     }
 
     #[test]
