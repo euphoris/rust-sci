@@ -1,5 +1,5 @@
 use core::libc::{c_double, c_int, c_void, size_t};
-use sci::{matrix, gsl_vector, gsl_matrix};
+use sci::{matrix, gsl_vector, gsl_matrix, vector};
 
 
 pub type gsl_permutation = c_void;
@@ -17,6 +17,12 @@ extern mod gsl {
     fn gsl_linalg_LU_det (LU: *mut gsl_matrix, signum: c_int) -> c_double;
     fn gsl_linalg_LU_lndet (LU: *mut gsl_matrix) -> c_double;
     fn gsl_linalg_LU_sgndet (LU: *mut gsl_matrix, signum: c_int) -> c_int;
+
+    // Singular Value Decomposition
+    fn gsl_linalg_SV_decomp (A: *gsl_matrix, V: *gsl_matrix, S: *gsl_vector, work: *gsl_vector) -> c_int;
+    fn gsl_linalg_SV_decomp_mod (A: *gsl_matrix, X: *gsl_matrix, V: *gsl_matrix, S: *gsl_vector, work: *gsl_vector) -> c_int;
+    fn gsl_linalg_SV_decomp_jacobi (A: *gsl_matrix, V: *gsl_matrix, S: *gsl_vector) -> c_int;
+    fn gsl_linalg_SV_solve (U: *gsl_matrix, V: *gsl_matrix, S: *gsl_vector, b: *gsl_vector, x: *gsl_vector) -> c_int;
 }
 
 
@@ -62,4 +68,25 @@ pub impl LU {
 }
 
 
+pub struct SV {
+    U: matrix,
+    S: vector,
+    V: matrix
+}
 
+
+pub impl SV {
+    fn decomp(m: &matrix) -> SV {
+        let mut U = m.clone();
+        let (_, n) = U.size;
+        let mut S = vector::zeros(n);
+        let mut V = matrix::zeros(n, n);
+        let mut work = vector::zeros(n);
+
+        unsafe {
+            gsl::gsl_linalg_SV_decomp(U.ptr, V.ptr, S.ptr, work.ptr);
+        }
+
+        SV { U: U, S: S, V: V }
+    }
+}

@@ -159,5 +159,19 @@ mod test {
         assert!(lu.mat.get(0,1) == 4.0);
         assert!(lu.mat.get(1,0) == 0.5);
         assert!(lu.mat.get(1,1) == 1.0);
+
+        let sv = SV::decomp(&m);
+        assert!(approx(sv.U.get(0,0), -0.5760484));
+        assert!(approx(sv.U.get(0,1), -0.8174156));
+        assert!(approx(sv.U.get(1,0), -0.8174156));
+        assert!(approx(sv.U.get(1,1),  0.5760484));
+
+        assert!(approx(sv.S.get(0), 5.4649857));
+        assert!(approx(sv.S.get(1), 0.3659662));
+
+        assert!(approx(sv.V.get(0,0), -0.4045536));
+        assert!(approx(sv.V.get(0,1),  0.9145143));
+        assert!(approx(sv.V.get(1,0), -0.9145143));
+        assert!(approx(sv.V.get(1,1), -0.4045536));
     }
 }
