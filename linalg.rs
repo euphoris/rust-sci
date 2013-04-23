@@ -1,5 +1,5 @@
-use core::libc::{c_int, c_void, size_t};
-use sci::{matrix, gsl_matrix};
+use core::libc::{c_double, c_int, c_void, size_t};
+use sci::{matrix, gsl_vector, gsl_matrix};
 
 
 pub type gsl_permutation = c_void;
@@ -9,7 +9,14 @@ extern mod gsl {
     fn gsl_permutation_calloc(n: size_t) -> *gsl_permutation;
     fn gsl_permutation_free(p: *gsl_permutation);
 
+    // LU decomposition
     fn gsl_linalg_LU_decomp (A: *gsl_matrix, p: *gsl_permutation, signum: *mut c_int) -> c_int;
+    fn gsl_linalg_LU_solve (LU: *gsl_matrix, p: *gsl_permutation, b: *gsl_vector, x: *gsl_vector) -> c_int;
+    fn gsl_linalg_LU_svx (LU: *gsl_matrix,  p: *gsl_permutation, x: *gsl_vector) -> c_int;
+    fn gsl_linalg_LU_refine (A: *gsl_matrix, LU: *gsl_matrix, p: *gsl_permutation, b: *gsl_vector, x: *mut gsl_vector, residual: *mut gsl_vector) -> c_int;
+    fn gsl_linalg_LU_det (LU: *mut gsl_matrix, signum: c_int) -> c_double;
+    fn gsl_linalg_LU_lndet (LU: *mut gsl_matrix) -> c_double;
+    fn gsl_linalg_LU_sgndet (LU: *mut gsl_matrix, signum: c_int) -> c_int;
 }
 
 
