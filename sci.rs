@@ -109,10 +109,8 @@ pub impl vector {
         unsafe {
             let mut new = vector::zeros(v.len() as size_t);
 
-            let mut i = 0;
-            while i < new.size {
+            for u64::range(0, new.size) |i| {
                 gsl::gsl_vector_set(new.ptr, i, v[i]);
-                i+=1;
             }
 
             new
@@ -297,14 +295,10 @@ pub impl matrix {
     fn from_array(vs: &[f64], n1: u64, n2:u64) -> matrix {
         let mut m = matrix::zeros(n1, n2);
 
-        let mut i = 0;
-        while i < n1 {
-            let mut j = 0;
-            while j < n2 {
+        for u64::range(0, n1) |i| {
+            for u64::range(0, n2) |j| {
                 m.set(i, j, vs[n2*i+j]);
-                j += 1;
             }
-            i += 1;
         }
         m
     }
@@ -430,16 +424,12 @@ pub impl matrix {
             return false
         }
 
-        let mut i = 0;
-        while i < n1 {
-            let mut j = 0;
-            while j < n2 {
+        for u64::range(0, n1) |i| {
+            for u64::range(0, n2) |j| {
                 if fcmp(self.get(i, j), other.get(i, j), epsilon) != 0 {
                     return false;
                 }
-                j += 1;
             }
-            i += 1;
         }
 
         true
