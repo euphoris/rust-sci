@@ -16,6 +16,7 @@ extern mod gsl {
 
     fn gsl_vector_get (v: *gsl_vector, i: size_t) -> c_double;
     fn gsl_vector_set (v: *gsl_vector, i: size_t, x: c_double);
+    fn gsl_vector_ptr (v: *gsl_vector, i: size_t) -> *mut c_double;
 
     fn gsl_vector_set_all (v: *gsl_vector, x: c_double);
     fn gsl_vector_set_zero (v: *gsl_vector);
@@ -51,6 +52,7 @@ extern mod gsl {
 
     fn gsl_matrix_get (m: *gsl_matrix, i: size_t, j: size_t) -> c_double;
     fn gsl_matrix_set (m: *gsl_matrix, i: size_t, j: size_t, x: c_double);
+    fn gsl_matrix_ptr (m: *gsl_matrix, i: size_t, j: size_t) -> *mut c_double;
 
     fn gsl_matrix_set_all (m: *gsl_matrix, x: c_double);
     fn gsl_matrix_set_zero (m: *gsl_matrix);
@@ -94,6 +96,24 @@ pub fn fcmp(x: f64, y: f64, epsilon: f64) -> i32 {
     unsafe { gsl::gsl_fcmp(x, y, epsilon) }
 }
 
+
+// vector or matrix element
+pub struct Element {
+    ptr: *mut c_double
+}
+
+
+pub impl Element {
+    fn get(&self) -> f64 {
+        unsafe { *self.ptr }
+    }
+
+    fn set(&self, v: f64) {
+        unsafe { *self.ptr = v }
+    }
+}
+
+
 pub struct vector {
     size: size_t,
     ptr: *gsl_vector
@@ -106,15 +126,17 @@ pub impl vector {
     }
 
     fn as_vector(v: &[f64]) -> vector {
-        unsafe {
-            let mut new = vector::zeros(v.len() as size_t);
+        let mut new = vector::zeros(v.len() as size_t);
 
-            for u64::range(0, new.size) |i| {
-                gsl::gsl_vector_set(new.ptr, i, v[i]);
-            }
-
-            new
+        for new.eachi |i, elem| {
+            elem.set(v[i]);
         }
+
+        new
+    }
+
+    fn element (&self, i: u64) -> Element {
+        unsafe { Element { ptr: gsl::gsl_vector_ptr(self.ptr, i ) } }
     }
 
     fn get(&self, i: size_t) -> f64 {
@@ -123,6 +145,12 @@ pub impl vector {
 
     fn set(&mut self, i: size_t, x: f64){
         unsafe { gsl::gsl_vector_set(self.ptr, i, x) }
+    }
+
+    fn eachi(&self, f: &fn(i: u64, elem: &Element) -> bool ){
+        for u64::range(0, self.size) |i| {
+            f(i, &self.element(i));
+        }
     }
 
     fn set_all(&mut self, x: f64){
@@ -281,6 +309,7 @@ impl Div<vector, vector> for vector {
     }
 }
 
+
 pub struct matrix {
     size: (size_t, size_t),
     ptr: *c_void
@@ -292,13 +321,27 @@ pub impl matrix {
         unsafe { matrix{ size: (n1, n2), ptr: gsl::gsl_matrix_calloc(n1, n2) } }
     }
 
-    fn from_array(vs: &[f64], n1: u64, n2:u64) -> matrix {
-        let mut m = matrix::zeros(n1, n2);
+    fn element(&self, i: u64, j: u64) -> Element {
+        unsafe {
+            Element { ptr: gsl::gsl_matrix_ptr(self.ptr, i, j) }
+        }
+    }
+
+    fn eachij(&self, f: &fn(i: u64, j: u64, elem: &Element) -> bool) {
+        let (n1, n2) = self.size;
 
         for u64::range(0, n1) |i| {
             for u64::range(0, n2) |j| {
-                m.set(i, j, vs[n2*i+j]);
+                f(i, j, &self.element(i,j));
             }
+        }
+    }
+
+    fn from_array(vs: &[f64], n1: u64, n2:u64) -> matrix {
+        let mut m = matrix::zeros(n1, n2);
+
+        for m.eachij |i, j, elem| {
+            elem.set(vs[n2*i+j]);
         }
         m
     }
@@ -419,16 +462,13 @@ pub impl matrix {
     }
 
     fn similar(&self, other:&matrix, epsilon:f64) -> bool {
-        let (n1, n2) = self.size;
         if self.size != other.size {
             return false
         }
 
-        for u64::range(0, n1) |i| {
-            for u64::range(0, n2) |j| {
-                if fcmp(self.get(i, j), other.get(i, j), epsilon) != 0 {
-                    return false;
-                }
+        for self.eachij |i, j, elem| {
+            if fcmp(elem.get(), other.get(i, j), epsilon) != 0 {
+                return false;
             }
         }
 
